@@ -13,7 +13,7 @@ require (
 	github.com/pdfcpu/pdfcpu v0.5.0
 	github.com/pkg/errors v0.9.1
 	github.com/readium/xmlquery v0.0.0-20230106230237-8f493145aef4
-	github.com/relvacode/iso8601 v1.4.0
+	github.com/relvacode/iso8601 v1.5.0
 	github.com/spf13/cobra v1.8.1
 	github.com/stretchr/testify v1.9.0
 	github.com/trimmer-io/go-xmp v1.0.0
@@ -21,7 +21,7 @@ require (
 	github.com/zeebo/xxh3 v1.0.2
 	golang.org/x/exp v0.0.0-20240529005216-23cca8864a10
 	golang.org/x/net v0.30.0
-	golang.org/x/text v0.19.0
+	golang.org/x/text v0.20.0
 )
 
 require (
