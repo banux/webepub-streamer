@@ -51,21 +51,13 @@ var compressableMimes = []string{
 	"application/vnd.ms-fontobject",
 }
 
-func makeRelative(link manifest.Link) manifest.Link {
-	link.Href = strings.TrimPrefix(link.Href, "/")
-	for i, alt := range link.Alternates {
-		link.Alternates[i].Href = strings.TrimPrefix(alt.Href, "/")
-	}
-	return link
-}
-
-func conformsToAsMimetype(conformsTo manifest.Profiles) string {
-	mime := mediatype.ReadiumWebpubManifest.String()
+func conformsToAsMimetype(conformsTo manifest.Profiles) mediatype.MediaType {
+	mime := mediatype.ReadiumWebpubManifest
 	for _, profile := range conformsTo {
 		if profile == manifest.ProfileDivina {
-			mime = mediatype.ReadiumDivinaManifest.String()
+			mime = mediatype.ReadiumDivinaManifest
 		} else if profile == manifest.ProfileAudiobook {
-			mime = mediatype.ReadiumAudiobookManifest.String()
+			mime = mediatype.ReadiumAudiobookManifest
 		} else {
 			continue
 		}

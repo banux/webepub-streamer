@@ -8,7 +8,7 @@ import (
 	"github.com/readium/go-toolkit/pkg/manifest"
 	"github.com/readium/go-toolkit/pkg/mediatype"
 	"github.com/readium/go-toolkit/pkg/pub"
-	"github.com/readium/go-toolkit/pkg/util"
+	"github.com/readium/go-toolkit/pkg/util/url"
 )
 
 type Parser struct {
@@ -36,11 +36,10 @@ func (p Parser) Parse(asset asset.PublicationAsset, f fetcher.Fetcher) (*pub.Bui
 	if err != nil {
 		return nil, err
 	}
-	if opfPath[0] != '/' {
-		opfPath = "/" + opfPath
-	}
 
-	opfXmlDocument, errx := f.Get(manifest.Link{Href: opfPath}).ReadAsXML(map[string]string{
+	// Detect DRM
+
+	opfXmlDocument, errx := f.Get(manifest.Link{Href: manifest.NewHREF(opfPath)}).ReadAsXML(map[string]string{
 		NamespaceOPF:                         "opf",
 		NamespaceDC:                          "dc",
 		VocabularyDCTerms:                    "dcterms",
@@ -78,8 +77,8 @@ func (p Parser) Parse(asset asset.PublicationAsset, f fetcher.Fetcher) (*pub.Bui
 	return pub.NewBuilder(manifest, ffetcher, builder), nil
 }
 
-func parseEncryptionData(fetcher fetcher.Fetcher) (ret map[string]manifest.Encryption) {
-	n, err := fetcher.Get(manifest.Link{Href: "/META-INF/encryption.xml"}).ReadAsXML(map[string]string{
+func parseEncryptionData(fetcher fetcher.Fetcher) (ret map[url.URL]manifest.Encryption) {
+	n, err := fetcher.Get(manifest.Link{Href: manifest.MustNewHREFFromString("META-INF/encryption.xml", false)}).ReadAsXML(map[string]string{
 		NamespaceENC:  "enc",
 		NamespaceSIG:  "ds",
 		NamespaceCOMP: "comp",
@@ -103,7 +102,7 @@ func parseNavigationData(packageDocument PackageDocument, fetcher fetcher.Fetche
 			}
 		} else {
 			for _, v := range packageDocument.Manifest {
-				if mediatype.NCX.ContainsFromString(v.MediaType) {
+				if mediatype.NCX.Contains(v.MediaType) {
 					ncxItem = &v
 					break
 				}
@@ -112,11 +111,8 @@ func parseNavigationData(packageDocument PackageDocument, fetcher fetcher.Fetche
 		if ncxItem == nil {
 			return
 		}
-		ncxPath, err := util.NewHREF(ncxItem.Href, packageDocument.Path).String()
-		if err != nil {
-			return
-		}
-		n, nerr := fetcher.Get(manifest.Link{Href: ncxPath}).ReadAsXML(map[string]string{
+		ncxPath := packageDocument.Path.Resolve(ncxItem.Href)
+		n, nerr := fetcher.Get(manifest.Link{Href: manifest.NewHREF(ncxPath)}).ReadAsXML(map[string]string{
 			NamespaceNCX: "ncx",
 		})
 		if nerr != nil {
@@ -139,11 +135,8 @@ func parseNavigationData(packageDocument PackageDocument, fetcher fetcher.Fetche
 		if navItem == nil {
 			return
 		}
-		navPath, err := util.NewHREF(navItem.Href, packageDocument.Path).String()
-		if err != nil {
-			return
-		}
-		n, errx := fetcher.Get(manifest.Link{Href: navPath}).ReadAsXML(map[string]string{
+		navPath := packageDocument.Path.Resolve(navItem.Href)
+		n, errx := fetcher.Get(manifest.Link{Href: manifest.NewHREF(navPath)}).ReadAsXML(map[string]string{
 			NamespaceXHTML: "html",
 			NamespaceOPS:   "epub",
 		})
@@ -157,9 +150,9 @@ func parseNavigationData(packageDocument PackageDocument, fetcher fetcher.Fetche
 
 func parseDisplayOptions(fetcher fetcher.Fetcher) (ret map[string]string) {
 	ret = make(map[string]string)
-	displayOptionsXml, err := fetcher.Get(manifest.Link{Href: "/META-INF/com.apple.ibooks.display-options.xml"}).ReadAsXML(nil)
+	displayOptionsXml, err := fetcher.Get(manifest.Link{Href: manifest.MustNewHREFFromString("META-INF/com.apple.ibooks.display-options.xml", false)}).ReadAsXML(nil)
 	if err != nil {
-		displayOptionsXml, err = fetcher.Get(manifest.Link{Href: "/META-INF/com.kobobooks.display-options.xml"}).ReadAsXML(nil)
+		displayOptionsXml, err = fetcher.Get(manifest.Link{Href: manifest.MustNewHREFFromString("META-INF/com.kobobooks.display-options.xml", false)}).ReadAsXML(nil)
 		if err != nil {
 			return
 		}

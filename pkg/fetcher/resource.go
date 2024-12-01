@@ -13,6 +13,7 @@ import (
 	"github.com/readium/go-toolkit/pkg/archive"
 	"github.com/readium/go-toolkit/pkg/manifest"
 	"github.com/readium/xmlquery"
+	"golang.org/x/text/encoding"
 	"golang.org/x/text/encoding/unicode"
 )
 
@@ -72,7 +73,10 @@ func ReadResourceAsString(r Resource) (string, *ResourceError) {
 	if ex != nil {
 		return "", ex
 	}
-	cs := r.Link().MediaType().Charset()
+	var cs encoding.Encoding
+	if r.Link().MediaType != nil {
+		cs = r.Link().MediaType.Charset()
+	}
 	if cs == nil {
 		cs = unicode.UTF8
 	}

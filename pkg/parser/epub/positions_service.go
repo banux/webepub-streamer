@@ -6,6 +6,7 @@ import (
 	"github.com/readium/go-toolkit/pkg/fetcher"
 	"github.com/readium/go-toolkit/pkg/internal/extensions"
 	"github.com/readium/go-toolkit/pkg/manifest"
+	"github.com/readium/go-toolkit/pkg/mediatype"
 	"github.com/readium/go-toolkit/pkg/pub"
 )
 
@@ -110,16 +111,16 @@ func (s *PositionsService) createReflowable(link manifest.Link, startPosition ui
 
 func (s *PositionsService) createLocator(link manifest.Link, progression float64, position uint) manifest.Locator {
 	loc := manifest.Locator{
-		Href:  link.Href,
-		Type:  link.Type,
-		Title: link.Title,
+		Href:      link.URL(nil, nil),
+		MediaType: link.MediaType,
+		Title:     link.Title,
 		Locations: manifest.Locations{
 			Progression: extensions.Pointer(progression),
 			Position:    extensions.Pointer(position),
 		},
 	}
-	if loc.Type == "" {
-		loc.Type = "text/html"
+	if loc.MediaType == nil {
+		loc.MediaType = &mediatype.HTML
 	}
 	return loc
 }

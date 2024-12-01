@@ -37,6 +37,15 @@ func URLFromDecodedPath(path string) (RelativeURL, error) {
 	return RelativeURLFromString(extensions.AddPercentEncodingPath(path))
 }
 
+// A proxy for [URLFromString] that panics on error.
+func MustURLFromString(url string) URL {
+	u, err := URLFromString(url)
+	if err != nil {
+		panic(err)
+	}
+	return u
+}
+
 // Creates a [URL] from its encoded string representation.
 func URLFromString(url string) (URL, error) {
 	u, err := gurl.Parse(url)

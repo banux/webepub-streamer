@@ -1,4 +1,4 @@
-package util
+package url
 
 import (
 	"strings"
@@ -59,10 +59,7 @@ func expandFormStyle(s string, parameters map[string]string) string {
 	sb.WriteRune('?')
 	var added bool
 	for i, str := range strs {
-		v, ok := parameters[str]
-		if !ok {
-			continue
-		}
+		v := parameters[str]
 		if i != 0 {
 			sb.WriteRune('&')
 		}
@@ -89,10 +86,10 @@ func (u URITemplate) Expand(parameters map[string]string) string {
 	// As a workaround, we encode manually this character. We don't do it in the full URI,
 	// because it could contain some legitimate +-as-space characters.
 	for k, v := range parameters {
-		parameters[k] = strings.Replace(v, "+", "~~+~~", -1)
+		parameters[k] = strings.Replace(extensions.AddPercentEncodingPath(v), "+", "~~+~~", -1)
 	}
 
-	href, _ := NewHREF(expandRegex.ReplaceAllStringSubmatchFunc(u.uri, func(s []string) string {
+	href := expandRegex.ReplaceAllStringSubmatchFunc(u.uri, func(s []string) string {
 		if len(s) != 3 {
 			return ""
 		}
@@ -101,9 +98,10 @@ func (u URITemplate) Expand(parameters map[string]string) string {
 		} else {
 			return expandFormStyle(s[2], parameters)
 		}
-	}), "").PercentEncodedString()
+	})
 
-	return strings.ReplaceAll(strings.ReplaceAll(href, "~~%20~~", "%2B"), "~~+~~", "%2B")
+	xx := strings.ReplaceAll(strings.ReplaceAll(href, "~~%20~~", "%2B"), "~~+~~", "%2B")
+	return xx
 
 }
 

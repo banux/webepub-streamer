@@ -5,6 +5,8 @@ import (
 	"testing"
 
 	"github.com/readium/go-toolkit/pkg/internal/extensions"
+	"github.com/readium/go-toolkit/pkg/mediatype"
+	"github.com/readium/go-toolkit/pkg/util/url"
 	"github.com/stretchr/testify/assert"
 )
 
@@ -15,8 +17,8 @@ func TestLocatorUnmarshalMinimalJSON(t *testing.T) {
 		"type": "text/html"
 	}`), &l))
 	assert.Equal(t, Locator{
-		Href: "http://locator",
-		Type: "text/html",
+		Href:      url.MustURLFromString("http://locator"),
+		MediaType: &mediatype.HTML,
 	}, l)
 }
 
@@ -34,8 +36,8 @@ func TestLocatorUnmarshalJSON(t *testing.T) {
 		}
 	}`), &l))
 	assert.Equal(t, Locator{
-		Href:      "http://locator",
-		Type:      "text/html",
+		Href:      url.MustURLFromString("http://locator"),
+		MediaType: &mediatype.HTML,
 		Title:     "My Locator",
 		Locations: Locations{Position: extensions.Pointer[uint](42)},
 		Text:      Text{Highlight: "Excerpt"},
@@ -49,8 +51,8 @@ func TestLocatorUnmarshalInvalidJSON(t *testing.T) {
 
 func TestLocatorMinimalJSON(t *testing.T) {
 	s, err := json.Marshal(&Locator{
-		Href: "http://locator",
-		Type: "text/html",
+		Href:      url.MustURLFromString("http://locator"),
+		MediaType: &mediatype.HTML,
 	})
 	assert.NoError(t, err)
 	assert.JSONEq(t, `{
@@ -61,9 +63,9 @@ func TestLocatorMinimalJSON(t *testing.T) {
 
 func TestLocatorJSON(t *testing.T) {
 	s, err := json.Marshal(&Locator{
-		Href:  "http://locator",
-		Type:  "text/html",
-		Title: "My Locator",
+		Href:      url.MustURLFromString("http://locator"),
+		MediaType: &mediatype.HTML,
+		Title:     "My Locator",
 		Locations: Locations{
 			Position: extensions.Pointer[uint](42),
 		},
@@ -181,7 +183,7 @@ func TestLocationsMinimalJSON(t *testing.T) {
 	s, err := json.Marshal(Locator{})
 	assert.NoError(t, err)
 	// Note: href and type are not omitted because they are required!
-	assert.JSONEq(t, `{"href":"", "type":""}`, string(s), "JSON objects should be equal")
+	assert.JSONEq(t, `{}`, string(s), "JSON objects should be equal")
 }
 
 func TestLocationsJSON(t *testing.T) {
