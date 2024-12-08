@@ -1,4 +1,4 @@
-FROM --platform=$BUILDPLATFORM golang:1-bookworm@sha256:b95f2e29d66a853eb47f707d401d7505e39585e8152453bdd9977b0bdbd32310 AS builder
+FROM --platform=$BUILDPLATFORM golang:1-bookworm@sha256:ef30001eeadd12890c7737c26f3be5b3a8479ccdcdc553b999c84879875a27ce AS builder
 ARG BUILDARCH TARGETOS TARGETARCH
 
 # Install GoReleaser
@@ -44,6 +44,9 @@ ADD https://pagure.io/mailcap/raw/master/f/mime.types /etc/
 # Add two demo EPUBs to the container by default
 ADD --chown=nonroot:nonroot https://readium-playground-files.storage.googleapis.com/demo/moby-dick.epub /srv/publications/
 ADD --chown=nonroot:nonroot https://readium-playground-files.storage.googleapis.com/demo/BellaOriginal3.epub /srv/publications/
+ADD --chown=nonroot:nonroot https://readium-playground-files.storage.googleapis.com/demo/coup002elin01_01.epub /srv/publications/
+ADD --chown=nonroot:nonroot https://readium-playground-files.storage.googleapis.com/demo/les_diaboliques.epub /srv/publications/
+ADD --chown=nonroot:nonroot https://readium-playground-files.storage.googleapis.com/demo/nathaniel-hawthorne_the-house-of-the-seven-gables_advanced.epub /srv/publications/
 
 # Copy built Go binary
 COPY --from=builder "/app/rwp" /opt/
