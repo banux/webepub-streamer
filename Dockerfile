@@ -45,6 +45,8 @@ ADD https://pagure.io/mailcap/raw/master/f/mime.types /etc/
 ADD --chown=nonroot:nonroot https://readium-playground-files.storage.googleapis.com/demo/moby-dick.epub /srv/publications/
 ADD --chown=nonroot:nonroot https://readium-playground-files.storage.googleapis.com/demo/BellaOriginal3.epub /srv/publications/
 ADD --chown=nonroot:nonroot https://readium-playground-files.storage.googleapis.com/demo/coup002elin01_01.epub /srv/publications/
+ADD --chown=nonroot:nonroot https://readium-playground-files.storage.googleapis.com/demo/les_diaboliques.epub /srv/publications/
+ADD --chown=nonroot:nonroot https://readium-playground-files.storage.googleapis.com/demo/nathaniel-hawthorne_the-house-of-the-seven-gables_advanced.epub /srv/publications/
 
 # Copy built Go binary
 COPY --from=builder "/app/rwp" /opt/
