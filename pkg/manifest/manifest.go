@@ -2,6 +2,7 @@ package manifest
 
 import (
 	"encoding/json"
+	"slices"
 
 	"github.com/pkg/errors"
 	"github.com/readium/go-toolkit/pkg/internal/extensions"
@@ -56,12 +57,75 @@ func (m Manifest) ConformsTo(profile Profile) bool {
 // Searches through (in order) the reading order, resources and links recursively following alternate and children links.
 // If there's no match, tries again after removing any query parameter and anchor from the given href.
 func (m Manifest) LinkWithHref(href url.URL) *Link {
+	href = href.Normalize() // Normalize HREF here instead of in the loop
+
 	var deepLinkWithHref func(ll LinkList, href url.URL) *Link
 	deepLinkWithHref = func(ll LinkList, href url.URL) *Link {
 		for _, l := range ll {
-			if l.URL(nil, nil).Equivalent(href) {
+			nu := l.URL(nil, nil).Normalize() // Normalized version of the href
+
+			if nu.Equivalent(href) {
+				// Exactly equivalent after normalization
 				return &l
 			} else {
+				// Check if they have the same relative path after resolving,
+				// and no fragment, meaning only the query could be different
+				if nu.Path() == href.Path() && href.Fragment() == "" {
+					// Check for a possible fit in a templated href
+					// This is a special fast path for web services accepting arbitrary query parameters in the URL
+					if l.Href.IsTemplated() { // Templated URI
+						if params := l.Href.Parameters(); len(params) > 0 {
+							// At least one parameter in the URI template
+							matches := true
+
+							// Check that every parameter in the URI template is present by key in the query
+							for _, p := range params {
+								if !href.Query().Has(p) {
+									matches = false
+									break
+								}
+							}
+							if matches {
+								// All template parameters are present in the query parameters
+								return &l
+							}
+						}
+					} else {
+						// Check for a possible fit in an href with query parameters
+						// This is a special fast path for web services accepting arbitrary query parameters in the URL
+						if len(nu.Query()) > 0 && len(href.Query()) > 0 {
+							// Both the give href and the one we're checking have query parameters
+							// If the given href has all the key/value pairs in the query that the
+							// one we're checking has, then they're equivalent!
+							matches := true
+							q := href.Query()
+							for k, v := range nu.Query() {
+								slices.Sort(v)
+								if qv, ok := q[k]; ok {
+									if len(qv) > 1 {
+										slices.Sort(qv)
+										if !slices.Equal(qv, v) {
+											matches = false
+											break
+										}
+									} else {
+										if qv[0] != v[0] {
+											matches = false
+											break
+										}
+									}
+								} else {
+									matches = false
+									break
+								}
+							}
+							if matches {
+								return &l
+							}
+						}
+					}
+				}
+
 				if link := deepLinkWithHref(l.Alternates, href); link != nil {
 					return link
 				}

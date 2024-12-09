@@ -33,7 +33,7 @@ type GuidedNavigationService interface {
 func GetForGuidedNavigationService(service GuidedNavigationService, link manifest.Link) (fetcher.Resource, bool) {
 	u := link.URL(nil, nil)
 
-	if !u.Equivalent(resolvedGuidedNavigation) {
+	if u.Path() != resolvedGuidedNavigation.Path() {
 		// Not the guided navigation link
 		return nil, false
 	}

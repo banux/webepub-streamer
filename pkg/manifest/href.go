@@ -2,6 +2,7 @@ package manifest
 
 import (
 	"github.com/readium/go-toolkit/pkg/util/url"
+	"github.com/readium/go-toolkit/pkg/util/url/uritemplates"
 )
 
 // An hypertext reference points to a resource in a [Publication].
@@ -31,7 +32,11 @@ func MustNewHREFFromString(href string, templated bool) HREF {
 func NewHREFFromString(href string, templated bool) (HREF, error) {
 	if templated {
 		// Check that the produced URL is valid
-		_, err := url.URLFromString(url.NewURITemplate(href).Expand(map[string]string{}))
+		eurl, _, err := uritemplates.Expand(href, nil)
+		if err != nil {
+			return HREF{}, err
+		}
+		_, err = url.URLFromString(eurl)
 		if err != nil {
 			return HREF{}, err
 		}
@@ -51,11 +56,13 @@ func NewHREFFromString(href string, templated bool) (HREF, error) {
 // If the HREF is a template, the [parameters] are used to expand it according to RFC 6570.
 func (h HREF) Resolve(base url.URL, parameters map[string]string) url.URL {
 	if h.IsTemplated() {
-		u, err := url.URLFromString(
-			url.NewURITemplate(h.template).Expand(parameters),
-		)
+		exp, _, err := uritemplates.Expand(h.template, parameters)
 		if err != nil {
-			panic("Invalid URL template expansion")
+			panic("Invalid URL template expansion: " + err.Error())
+		}
+		u, err := url.URLFromString(exp)
+		if err != nil {
+			panic("Invalid URL template expansion: " + err.Error())
 		}
 		if base == nil {
 			return u
@@ -77,7 +84,8 @@ func (h HREF) IsTemplated() bool {
 // List of URI template parameter keys, if the HREF is templated.
 func (h HREF) Parameters() []string {
 	if h.IsTemplated() {
-		return url.NewURITemplate(h.template).Parameters()
+		v, _ := uritemplates.Values(h.template)
+		return v
 	}
 	return []string{}
 }

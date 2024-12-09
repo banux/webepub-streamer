@@ -29,13 +29,13 @@ func TestConvertTemplatedHREFToURL(t *testing.T) {
 		"foo":   "bar",
 	}
 
-	u, _ := url.URLFromString("url?x=&hello=&y=name")
+	u, _ := url.URLFromString("urlname")
 	assert.Equal(t, u, template.Resolve(nil, nil))
 
-	u, _ = url.URLFromString("http://readium/publication/url?x=&hello=&y=name")
+	u, _ = url.URLFromString("http://readium/publication/urlname")
 	assert.Equal(t, u, template.Resolve(base, nil))
 
-	u, _ = url.URLFromString("http://readium/publication/url?x=aaa&hello=Hello,%20world&y=bname")
+	u, _ = url.URLFromString("http://readium/publication/url?x=aaa&hello=Hello%2C%20world&y=bname")
 	assert.Equal(t, u, template.Resolve(base, parameters))
 }
 

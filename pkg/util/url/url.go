@@ -29,6 +29,7 @@ type URL interface {
 	Relativize(url URL) URL  // Relativizes the given [url] against this URL.
 	Normalize() URL          // Normalizes the URL using a subset of the RFC-3986 rules (https://datatracker.ietf.org/doc/html/rfc3986#section-6).
 	String() string          // Encodes the URL to a string.
+	Raw() gurl.URL           // Returns the underlying Go URL.
 	Equivalent(url URL) bool // Returns whether the receiver is equivalent to the given `url` after normalization.
 }
 
@@ -192,6 +193,11 @@ func (u RelativeURL) String() string {
 	return u.url.String()
 }
 
+// Raw implements URL
+func (u RelativeURL) Raw() gurl.URL {
+	return u.url
+}
+
 // Equivalent implements URL
 func (u RelativeURL) Equivalent(url URL) bool {
 	return u.Normalize().String() == url.Normalize().String()
@@ -335,6 +341,11 @@ func (u AbsoluteURL) Normalize() URL {
 // String implements URL
 func (u AbsoluteURL) String() string {
 	return u.url.String()
+}
+
+// Raw implements URL
+func (u AbsoluteURL) Raw() gurl.URL {
+	return u.url
 }
 
 // Equivalent implements URL

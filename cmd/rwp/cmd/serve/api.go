@@ -174,13 +174,16 @@ func (s *Server) getAsset(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	// Parse asset path
+	// Parse asset path from mux vars
 	href, err := url.URLFromDecodedPath(path.Clean(vars["asset"]))
 	if err != nil {
 		slog.Error("failed parsing asset path as URL", "error", err)
 		w.WriteHeader(400)
 		return
 	}
+	rawHref := href.Raw()
+	rawHref.RawQuery = r.URL.Query().Encode() // Add the query parameters of the URL
+	href, _ = url.RelativeURLFromGo(rawHref)  // Turn it back into a go-toolkit relative URL
 
 	// Make sure the asset exists in the publication
 	link := publication.LinkWithHref(href)
