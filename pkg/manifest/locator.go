@@ -151,10 +151,28 @@ func TextFromJSON(rawJson map[string]interface{}) (t Text) {
 	return
 }
 
-func (t Text) Substring(start, end uint64) Text {
+func (t Text) Substring(start, end int64) Text {
 	if t.Highlight == "" {
 		return t
 	}
+
+	length := int64(len(t.Highlight))
+	if start > length-1 {
+		start = length
+	}
+	if start < 0 {
+		start = 0
+	}
+	if end > length-1 {
+		end = length - 1
+	}
+	if end < 0 {
+		end = 0
+	}
+
+	t.Before += t.Highlight[:start]
+	t.After = t.Highlight[end+1:] + t.After
+	t.Highlight = t.Highlight[start : end+1]
 
 	return t
 }

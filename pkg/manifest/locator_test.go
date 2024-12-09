@@ -245,3 +245,53 @@ func TestTextJSON(t *testing.T) {
 		"after": "Text after"
 	}`, string(s), "JSON objects should be equal")
 }
+
+func TestSubstringFromRange(t *testing.T) {
+	text := Text{
+		Before:    "before",
+		Highlight: "highlight",
+		After:     "after",
+	}
+
+	assert.Equal(t, Text{
+		Before:    "before",
+		Highlight: "h",
+		After:     "ighlightafter",
+	}, text.Substring(0, -1))
+
+	assert.Equal(t, Text{
+		Before:    "before",
+		Highlight: "h",
+		After:     "ighlightafter",
+	}, text.Substring(0, 0))
+
+	assert.Equal(t, Text{
+		Before:    "beforehigh",
+		Highlight: "lig",
+		After:     "htafter",
+	}, text.Substring(4, 6))
+
+	assert.Equal(t, Text{
+		Before:    "before",
+		Highlight: "highlight",
+		After:     "after",
+	}, text.Substring(0, 8))
+
+	assert.Equal(t, Text{
+		Before:    "beforehighli",
+		Highlight: "ght",
+		After:     "after",
+	}, text.Substring(6, 12))
+
+	assert.Equal(t, Text{
+		Before:    "beforehighligh",
+		Highlight: "t",
+		After:     "after",
+	}, text.Substring(8, 12))
+
+	assert.Equal(t, Text{
+		Before:    "beforehighlight",
+		Highlight: "",
+		After:     "after",
+	}, text.Substring(9, 12))
+}
