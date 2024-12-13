@@ -63,7 +63,7 @@ func URLFromGo(url gurl.URL) (URL, error) {
 	}
 }
 
-// Represents an absolute Uniform Resource Locator.
+// Represents a relative Uniform Resource Locator.
 // RelativeURL implements URL
 type RelativeURL struct {
 	url        gurl.URL
