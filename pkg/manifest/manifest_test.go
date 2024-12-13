@@ -370,7 +370,7 @@ func TestManifestLocatorFromMinimalLink(t *testing.T) {
 	var z float64
 	assert.Equal(t, &Locator{
 		Href:      url.MustURLFromString("href"),
-		MediaType: &mediatype.HTML,
+		MediaType: mediatype.HTML,
 		Title:     "Resource",
 		Locations: Locations{
 			Progression: &z,
@@ -402,7 +402,7 @@ func TestManifestLocatorFromInside(t *testing.T) {
 	var z float64
 	assert.Equal(t, &Locator{
 		Href:      url.MustURLFromString("href1"),
-		MediaType: &mediatype.HTML,
+		MediaType: mediatype.HTML,
 		Locations: Locations{
 			Progression: &z,
 		},
@@ -411,7 +411,7 @@ func TestManifestLocatorFromInside(t *testing.T) {
 	}))
 	assert.Equal(t, &Locator{
 		Href:      url.MustURLFromString("href2"),
-		MediaType: &mediatype.HTML,
+		MediaType: mediatype.HTML,
 		Locations: Locations{
 			Progression: &z,
 		},
@@ -420,7 +420,7 @@ func TestManifestLocatorFromInside(t *testing.T) {
 	}))
 	assert.Equal(t, &Locator{
 		Href:      url.MustURLFromString("href3"),
-		MediaType: &mediatype.HTML,
+		MediaType: mediatype.HTML,
 		Locations: Locations{
 			Progression: &z,
 		},
@@ -443,7 +443,7 @@ func TestManifestLocatorFromFullLinkWithFragment(t *testing.T) {
 
 	assert.Equal(t, &Locator{
 		Href:      url.MustURLFromString("href"),
-		MediaType: &mediatype.HTML,
+		MediaType: mediatype.HTML,
 		Title:     "Resource",
 		Locations: Locations{
 			Fragments: []string{"page=42"},
@@ -467,7 +467,7 @@ func TestManifestLocatorFallbackTitle(t *testing.T) {
 	}
 	assert.Equal(t, &Locator{
 		Href:      url.MustURLFromString("href"),
-		MediaType: &mediatype.HTML,
+		MediaType: mediatype.HTML,
 		Title:     "My link",
 		Locations: Locations{
 			Fragments: []string{"page=42"},

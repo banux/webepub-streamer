@@ -18,7 +18,7 @@ func TestLocatorUnmarshalMinimalJSON(t *testing.T) {
 	}`), &l))
 	assert.Equal(t, Locator{
 		Href:      url.MustURLFromString("http://locator"),
-		MediaType: &mediatype.HTML,
+		MediaType: mediatype.HTML,
 	}, l)
 }
 
@@ -37,7 +37,7 @@ func TestLocatorUnmarshalJSON(t *testing.T) {
 	}`), &l))
 	assert.Equal(t, Locator{
 		Href:      url.MustURLFromString("http://locator"),
-		MediaType: &mediatype.HTML,
+		MediaType: mediatype.HTML,
 		Title:     "My Locator",
 		Locations: Locations{Position: extensions.Pointer[uint](42)},
 		Text:      Text{Highlight: "Excerpt"},
@@ -52,7 +52,7 @@ func TestLocatorUnmarshalInvalidJSON(t *testing.T) {
 func TestLocatorMinimalJSON(t *testing.T) {
 	s, err := json.Marshal(&Locator{
 		Href:      url.MustURLFromString("http://locator"),
-		MediaType: &mediatype.HTML,
+		MediaType: mediatype.HTML,
 	})
 	assert.NoError(t, err)
 	assert.JSONEq(t, `{
@@ -64,7 +64,7 @@ func TestLocatorMinimalJSON(t *testing.T) {
 func TestLocatorJSON(t *testing.T) {
 	s, err := json.Marshal(&Locator{
 		Href:      url.MustURLFromString("http://locator"),
-		MediaType: &mediatype.HTML,
+		MediaType: mediatype.HTML,
 		Title:     "My Locator",
 		Locations: Locations{
 			Position: extensions.Pointer[uint](42),
@@ -180,10 +180,13 @@ func TestLocationsUnmarshalIgnoresTotalProgressionOutOfRange(t *testing.T) {
 }
 
 func TestLocationsMinimalJSON(t *testing.T) {
-	s, err := json.Marshal(Locator{})
+	s, err := json.Marshal(Locator{
+		Href:      url.MustURLFromString("http://locator"),
+		MediaType: mediatype.HTML,
+	})
 	assert.NoError(t, err)
 	// Note: href and type are not omitted because they are required!
-	assert.JSONEq(t, `{}`, string(s), "JSON objects should be equal")
+	assert.JSONEq(t, `{"href": "http://locator", "type": "text/html"}`, string(s), "JSON objects should be equal")
 }
 
 func TestLocationsJSON(t *testing.T) {

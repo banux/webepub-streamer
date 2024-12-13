@@ -73,7 +73,7 @@ func (s PerResourcePositionsService) PositionsByReadingOrder() [][]manifest.Loca
 		}
 		positions[i] = []manifest.Locator{{
 			Href:      v.Href.Resolve(nil, nil),
-			MediaType: typ,
+			MediaType: *typ,
 			Title:     v.Title,
 			Locations: manifest.Locations{
 				Position:         extensions.Pointer(uint(i) + 1),

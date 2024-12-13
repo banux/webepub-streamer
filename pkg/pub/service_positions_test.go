@@ -22,7 +22,7 @@ func TestPerResourcePositionsServiceSingleReadingOrder(t *testing.T) {
 
 	assert.Equal(t, []manifest.Locator{{
 		Href:      url.MustURLFromString("res"),
-		MediaType: &mediatype.PNG,
+		MediaType: mediatype.PNG,
 		Locations: manifest.Locations{
 			Position:         extensions.Pointer(uint(1)),
 			TotalProgression: extensions.Pointer(float64(0.0)),
@@ -43,7 +43,7 @@ func TestPerResourcePositionsServiceMultiReadingOrder(t *testing.T) {
 	assert.Equal(t, []manifest.Locator{
 		{
 			Href:      url.MustURLFromString("res"),
-			MediaType: &mediatype.Binary,
+			MediaType: mediatype.Binary,
 			Locations: manifest.Locations{
 				Position:         extensions.Pointer(uint(1)),
 				TotalProgression: extensions.Pointer(float64(0.0)),
@@ -51,7 +51,7 @@ func TestPerResourcePositionsServiceMultiReadingOrder(t *testing.T) {
 		},
 		{
 			Href:      url.MustURLFromString("chap1"),
-			MediaType: &mediatype.PNG,
+			MediaType: mediatype.PNG,
 			Locations: manifest.Locations{
 				Position:         extensions.Pointer(uint(2)),
 				TotalProgression: extensions.Pointer(float64(1.0 / 3.0)),
@@ -59,7 +59,7 @@ func TestPerResourcePositionsServiceMultiReadingOrder(t *testing.T) {
 		},
 		{
 			Href:      url.MustURLFromString("chap2"),
-			MediaType: &mediatype.PNG,
+			MediaType: mediatype.PNG,
 			Title:     "Chapter 2",
 			Locations: manifest.Locations{
 				Position:         extensions.Pointer(uint(3)),
@@ -78,7 +78,7 @@ func TestPerResourcePositionsServiceMediaTypeFallback(t *testing.T) {
 	mt, _ := mediatype.NewOfString("image/*")
 	assert.Equal(t, []manifest.Locator{{
 		Href:      url.MustURLFromString("res"),
-		MediaType: &mt,
+		MediaType: mt,
 		Locations: manifest.Locations{
 			Position:         extensions.Pointer(uint(1)),
 			TotalProgression: extensions.Pointer(float64(0.0)),

@@ -71,7 +71,7 @@ func (s *PositionsService) computePositions() [][]manifest.Locator {
 
 		positions[i] = []manifest.Locator{{
 			Href:      u,
-			MediaType: s.link.MediaType,
+			MediaType: *typ,
 			Locations: manifest.Locations{
 				Fragments:        []string{fragment},
 				Progression:      &progression,

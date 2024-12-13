@@ -212,7 +212,7 @@ func (m Manifest) LocatorFromLink(link Link) *Locator {
 
 	l := &Locator{
 		Href:      url,
-		MediaType: mediaType,
+		MediaType: *mediaType,
 		Title:     resourceLink.Title,
 	}
 

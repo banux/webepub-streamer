@@ -188,11 +188,11 @@ func (t Text) Substring(start, end int64) Text {
 //
 // https://github.com/readium/architecture/tree/master/locators
 type Locator struct {
-	Href      url.URL              `json:"href"`
-	MediaType *mediatype.MediaType `json:"type"`
-	Title     string               `json:"title,omitempty"`
-	Locations Locations            `json:"locations,omitempty"`
-	Text      Text                 `json:"text,omitempty"`
+	Href      url.URL             `json:"href"`
+	MediaType mediatype.MediaType `json:"type"`
+	Title     string              `json:"title,omitempty"`
+	Locations Locations           `json:"locations,omitempty"`
+	Text      Text                `json:"text,omitempty"`
 }
 
 func LocatorFromJSON(rawJson map[string]interface{}) (Locator, error) {
@@ -216,11 +216,10 @@ func LocatorFromJSON(rawJson map[string]interface{}) (Locator, error) {
 	}
 	locator.Href = url
 
-	mediaType, err := mediatype.NewOfString(rawType)
+	locator.MediaType, err = mediatype.NewOfString(rawType)
 	if err != nil {
 		return Locator{}, errors.Wrap(err, "failed unmarshalling 'type' as valid mimetype")
 	}
-	locator.MediaType = &mediaType
 
 	if rawLocations, ok := rawJson["locations"].(map[string]interface{}); ok {
 		locations, err := LocationsFromJSON(rawLocations)
@@ -253,14 +252,14 @@ func (l *Locator) UnmarshalJSON(b []byte) error {
 
 func (l Locator) MarshalJSON() ([]byte, error) {
 	j := make(map[string]interface{})
-	if l.Href != nil {
-		// Should we make it an error not to have an href?
-		j["href"] = l.Href.String()
+
+	if l.Href == nil {
+		return nil, errors.New("href is required in Locator")
 	}
-	if l.MediaType != nil {
-		// Should we make it an error not to have a type?
-		j["type"] = l.MediaType.String()
-	}
+	j["href"] = l.Href.String()
+
+	j["type"] = l.MediaType.String()
+
 	if l.Title != "" {
 		j["title"] = l.Title
 	}
