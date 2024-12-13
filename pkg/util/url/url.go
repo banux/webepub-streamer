@@ -12,11 +12,9 @@ import (
 	"golang.org/x/net/idna"
 )
 
-/*
-A Uniform Resource Locator.
-
-https://url.spec.whatwg.org/
-*/
+// A Uniform Resource Locator.
+//
+// https://url.spec.whatwg.org/
 type URL interface {
 	Path() string            // Decoded path segments identifying a location.
 	Filename() string        // Decoded filename portion of the URL path.
