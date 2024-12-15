@@ -88,7 +88,7 @@ func parseLiElement(li *xmlquery.Node, filePath url.URL) (link *manifest.Link) {
 		title = strings.TrimSpace(muchSpaceSuchWowMatcher.ReplaceAllString(first.InnerText(), " "))
 	}
 	rawHref := first.SelectAttr("href")
-	href := url.MustURLFromString("")
+	href := url.MustURLFromString("#")
 	if first.Data == "a" && rawHref != "" {
 		s, err := url.FromEPUBHref(rawHref)
 		if err == nil {
