@@ -38,7 +38,7 @@ func GetForGuidedNavigationService(service GuidedNavigationService, link manifes
 		return nil, false
 	}
 
-	ref := u.Query().Get("ref")
+	ref := u.Raw().Query().Get("ref")
 	if ref == "" {
 		// No ref parameter
 		// TODO: support omission of ref to generate entire doc.

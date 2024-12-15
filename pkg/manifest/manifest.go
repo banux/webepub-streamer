@@ -80,7 +80,7 @@ func (m Manifest) LinkWithHref(href url.URL) *Link {
 
 							// Check that every parameter in the URI template is present by key in the query
 							for _, p := range params {
-								if !href.Query().Has(p) {
+								if !href.Raw().Query().Has(p) {
 									matches = false
 									break
 								}
@@ -93,13 +93,13 @@ func (m Manifest) LinkWithHref(href url.URL) *Link {
 					} else {
 						// Check for a possible fit in an href with query parameters
 						// This is a special fast path for web services accepting arbitrary query parameters in the URL
-						if len(nu.Query()) > 0 && len(href.Query()) > 0 {
+						if len(nu.Raw().Query()) > 0 && len(href.Raw().Query()) > 0 {
 							// Both the give href and the one we're checking have query parameters
 							// If the given href has all the key/value pairs in the query that the
 							// one we're checking has, then they're equivalent!
 							matches := true
-							q := href.Query()
-							for k, v := range nu.Query() {
+							q := href.Raw().Query()
+							for k, v := range nu.Raw().Query() {
 								slices.Sort(v)
 								if qv, ok := q[k]; ok {
 									if len(qv) > 1 {

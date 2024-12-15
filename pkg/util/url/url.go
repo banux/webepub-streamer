@@ -19,7 +19,6 @@ type URL interface {
 	Path() string            // Decoded path segments identifying a location.
 	Filename() string        // Decoded filename portion of the URL path.
 	Extension() string       // Extension of the filename portion of the URL path.
-	Query() gurl.Values      // Returns the query parameters present in this URL.
 	RemoveQuery() URL        // Returns a copy of this URL after dropping its query.
 	Fragment() string        // Returns the decoded fragment present in this URL, if any.
 	RemoveFragment() URL     // Returns a copy of this URL after dropping its fragment.
@@ -27,7 +26,7 @@ type URL interface {
 	Relativize(url URL) URL  // Relativizes the given [url] against this URL.
 	Normalize() URL          // Normalizes the URL using a subset of the RFC-3986 rules (https://datatracker.ietf.org/doc/html/rfc3986#section-6).
 	String() string          // Encodes the URL to a string.
-	Raw() gurl.URL           // Returns the underlying Go URL.
+	Raw() *gurl.URL          // Returns the underlying Go URL.
 	Equivalent(url URL) bool // Returns whether the receiver is equivalent to the given `url` after normalization.
 }
 
@@ -51,11 +50,11 @@ func URLFromString(url string) (URL, error) {
 	if err != nil {
 		return nil, err
 	}
-	return URLFromGo(*u)
+	return URLFromGo(u)
 }
 
 // Create a [URL] from a Go net/url URL.
-func URLFromGo(url gurl.URL) (URL, error) {
+func URLFromGo(url *gurl.URL) (URL, error) {
 	if url.IsAbs() {
 		return AbsoluteURLFromGo(url)
 	} else {
@@ -66,7 +65,7 @@ func URLFromGo(url gurl.URL) (URL, error) {
 // Represents a relative Uniform Resource Locator.
 // RelativeURL implements URL
 type RelativeURL struct {
-	url        gurl.URL
+	url        *gurl.URL
 	normalized bool
 }
 
@@ -85,11 +84,6 @@ func (u RelativeURL) Filename() string {
 // Extension implements URL
 func (u RelativeURL) Extension() string {
 	return strings.TrimPrefix(path.Ext(u.Filename()), ".")
-}
-
-// Query implements URL
-func (u RelativeURL) Query() gurl.Values {
-	return u.url.Query()
 }
 
 // RemoveQuery implements URL
@@ -114,7 +108,7 @@ func (u RelativeURL) Resolve(url URL) URL {
 	if _, ok := url.(AbsoluteURL); ok {
 		return url
 	} else if rel, ok := url.(RelativeURL); ok {
-		res := u.url.ResolveReference(&rel.url)
+		res := u.url.ResolveReference(rel.url)
 
 		// ResolveReference always adds a fowards slash to the path, even if the given URL has no slash prefix.
 		// To match the other toolkits, we remove the slash if the URL and the given URL have no slash.
@@ -126,7 +120,7 @@ func (u RelativeURL) Resolve(url URL) URL {
 			}
 		}
 
-		return RelativeURL{url: *res}
+		return RelativeURL{url: res}
 	} else {
 		panic("URL type not supported")
 	}
@@ -155,7 +149,7 @@ func (u RelativeURL) Relativize(url URL) URL {
 			}
 		}
 
-		return RelativeURL{url: gurl.URL{
+		return RelativeURL{url: &gurl.URL{
 			Path:       cp[len(bp):],
 			Fragment:   url.url.Fragment,
 			RawQuery:   url.url.RawQuery,
@@ -192,7 +186,7 @@ func (u RelativeURL) String() string {
 }
 
 // Raw implements URL
-func (u RelativeURL) Raw() gurl.URL {
+func (u RelativeURL) Raw() *gurl.URL {
 	return u.url
 }
 
@@ -207,11 +201,11 @@ func RelativeURLFromString(url string) (RelativeURL, error) {
 	if err != nil {
 		return RelativeURL{}, err
 	}
-	return RelativeURLFromGo(*u)
+	return RelativeURLFromGo(u)
 }
 
 // Create a [RelativeURL] from a Go net/url URL.
-func RelativeURLFromGo(url gurl.URL) (RelativeURL, error) {
+func RelativeURLFromGo(url *gurl.URL) (RelativeURL, error) {
 	if url.IsAbs() {
 		return RelativeURL{}, errors.New("URL is not relative")
 	}
@@ -219,7 +213,7 @@ func RelativeURLFromGo(url gurl.URL) (RelativeURL, error) {
 }
 
 type AbsoluteURL struct {
-	url        gurl.URL
+	url        *gurl.URL
 	scheme     Scheme
 	normalized bool
 }
@@ -240,11 +234,6 @@ func (u AbsoluteURL) Filename() string {
 // Extension implements URL
 func (u AbsoluteURL) Extension() string {
 	return strings.TrimPrefix(path.Ext(u.Filename()), ".")
-}
-
-// Query implements URL
-func (u AbsoluteURL) Query() gurl.Values {
-	return u.url.Query()
 }
 
 // RemoveQuery implements URL
@@ -269,8 +258,8 @@ func (u AbsoluteURL) Resolve(url URL) URL {
 	if _, ok := url.(AbsoluteURL); ok {
 		return url
 	} else if rel, ok := url.(RelativeURL); ok {
-		res := u.url.ResolveReference(&rel.url)
-		return AbsoluteURL{url: *res, scheme: u.scheme}
+		res := u.url.ResolveReference(rel.url)
+		return AbsoluteURL{url: res, scheme: u.scheme}
 	} else {
 		panic("URL type not supported")
 	}
@@ -299,7 +288,7 @@ func (u AbsoluteURL) Relativize(url URL) URL {
 			}
 		}
 
-		return RelativeURL{url: gurl.URL{
+		return RelativeURL{url: &gurl.URL{
 			Path:       cp[len(bp):],
 			Fragment:   url.url.Fragment,
 			RawQuery:   url.url.RawQuery,
@@ -342,7 +331,7 @@ func (u AbsoluteURL) String() string {
 }
 
 // Raw implements URL
-func (u AbsoluteURL) Raw() gurl.URL {
+func (u AbsoluteURL) Raw() *gurl.URL {
 	return u.url
 }
 
@@ -380,11 +369,11 @@ func AbsoluteURLFromString(url string) (AbsoluteURL, error) {
 	if err != nil {
 		return AbsoluteURL{}, err
 	}
-	return AbsoluteURLFromGo(*u)
+	return AbsoluteURLFromGo(u)
 }
 
 // Create a [AbsoluteURL] from a Go net/url URL.
-func AbsoluteURLFromGo(url gurl.URL) (AbsoluteURL, error) {
+func AbsoluteURLFromGo(url *gurl.URL) (AbsoluteURL, error) {
 	if !url.IsAbs() {
 		return AbsoluteURL{}, errors.New("URL is not absolute")
 	}
@@ -417,7 +406,7 @@ func FromEPUBHref(href string) (URL, error) {
 }
 
 func FromFilepath(path string) (URL, error) {
-	return AbsoluteURLFromGo(gurl.URL{
+	return AbsoluteURLFromGo(&gurl.URL{
 		Path:   filepath.ToSlash(path),
 		Scheme: SchemeFile.String(),
 	})

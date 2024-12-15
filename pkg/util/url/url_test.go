@@ -1,7 +1,6 @@
 package url
 
 import (
-	"net/url"
 	gurl "net/url"
 	"testing"
 
@@ -53,7 +52,7 @@ func TestCreateFromFragmentOnly(t *testing.T) {
 	if assert.NoError(t, err) {
 		guu, err := gurl.Parse("#fragment")
 		if assert.NoError(t, err) {
-			uu, err := RelativeURLFromGo(*guu)
+			uu, err := RelativeURLFromGo(guu)
 			if assert.NoError(t, err) {
 				assert.Equal(t, uu, u)
 			}
@@ -66,7 +65,7 @@ func TestCreateFromQueryOnly(t *testing.T) {
 	if assert.NoError(t, err) {
 		guu, err := gurl.Parse("?query=param")
 		if assert.NoError(t, err) {
-			uu, err := RelativeURLFromGo(*guu)
+			uu, err := RelativeURLFromGo(guu)
 			if assert.NoError(t, err) {
 				assert.Equal(t, uu, u)
 			}
@@ -79,7 +78,7 @@ func TestCreateFromAbsoluteURL(t *testing.T) {
 	if assert.NoError(t, err) {
 		guu, err := gurl.Parse("http://example.com/foo")
 		if assert.NoError(t, err) {
-			uu, err := AbsoluteURLFromGo(*guu)
+			uu, err := AbsoluteURLFromGo(guu)
 			if assert.NoError(t, err) {
 				assert.Equal(t, uu, u)
 			}
@@ -90,7 +89,7 @@ func TestCreateFromAbsoluteURL(t *testing.T) {
 	if assert.NoError(t, err) {
 		guu, err := gurl.Parse("file:///foo/bar")
 		if assert.NoError(t, err) {
-			uu, err := AbsoluteURLFromGo(*guu)
+			uu, err := AbsoluteURLFromGo(guu)
 			if assert.NoError(t, err) {
 				assert.Equal(t, uu, u)
 			}
@@ -200,26 +199,6 @@ func TestExtensionIsPercentDecoded(t *testing.T) {
 		u, err := URLFromString(k)
 		if assert.NoError(t, err) {
 			assert.Equal(t, v, u.Extension())
-		}
-	}
-}
-
-// Admittedly this test is not that useful because we didn't have to figure out query param parsing ourselves.
-func TestQuery(t *testing.T) {
-	for k, v := range map[string]url.Values{
-		"http://domain.com/path": {},
-		"http://domain.com/path?query=param#anchor": {
-			"query": []string{"param"},
-		},
-		"http://domain.com/path?query=param&fruit=banana&query=other&empty": {
-			"query": []string{"param", "other"},
-			"fruit": []string{"banana"},
-			"empty": []string{""},
-		},
-	} {
-		u, err := URLFromString(k)
-		if assert.NoError(t, err) {
-			assert.Equal(t, v, u.Query())
 		}
 	}
 }
