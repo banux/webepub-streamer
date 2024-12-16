@@ -36,8 +36,8 @@ func TestReturnsAdditionalInferredA11yMetadata(t *testing.T) {
 
 func newLink(mt mediatype.MediaType, extension string) manifest.Link {
 	return manifest.Link{
-		Href: "file." + extension,
-		Type: mt.String(),
+		Href:      manifest.MustNewHREFFromString("file."+extension, false),
+		MediaType: &mt,
 	}
 }
 
