@@ -7,7 +7,7 @@ toolchain go1.23.4
 require (
 	github.com/CAFxX/httpcompression v0.0.9
 	github.com/agext/regexp v1.3.0
-	github.com/andybalholm/cascadia v1.3.2
+	github.com/andybalholm/cascadia v1.3.3
 	github.com/deckarep/golang-set v1.8.0
 	github.com/go-viper/mapstructure/v2 v2.1.0
 	github.com/gorilla/mux v1.8.1
@@ -22,7 +22,7 @@ require (
 	github.com/vmihailenco/go-tinylfu v0.2.2
 	github.com/zeebo/xxh3 v1.0.2
 	golang.org/x/exp v0.0.0-20240529005216-23cca8864a10
-	golang.org/x/net v0.32.0
+	golang.org/x/net v0.33.0
 	golang.org/x/text v0.21.0
 )
 
