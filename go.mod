@@ -22,7 +22,7 @@ require (
 	github.com/vmihailenco/go-tinylfu v0.2.2
 	github.com/zeebo/xxh3 v1.0.2
 	golang.org/x/exp v0.0.0-20240529005216-23cca8864a10
-	golang.org/x/net v0.32.0
+	golang.org/x/net v0.33.0
 	golang.org/x/text v0.21.0
 )
 
